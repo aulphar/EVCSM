@@ -4,11 +4,7 @@ import ChargingSession from "./ChargingSession";
 
 function App() {
   return (
-
-
       <ChargingSession></ChargingSession>
-
-
   );
 }
 

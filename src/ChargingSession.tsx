@@ -1,27 +1,43 @@
 import { useState } from "react";
-import './ChargingSession.css';  // Import the CSS file
+import mqtt from "mqtt";
+import './ChargingSession.css';
 
 export default function ChargingSession() {
     const [charging, setCharging] = useState<boolean>(false);
     const [energyConsumed, setEnergyConsumed] = useState<number>(0);
     const [status, setStatus] = useState<string>("Idle");
 
+    const client = mqtt.connect('ws://127.0.0.1:9001');
+    client.on("connect", () => {
+        client.subscribe("charging/updates",() => {console.log("Suscribed to Charging Updates")});
+        console.log("Connected to MQTT broker.");
+    });
+    client.on("message", (topic, message) => {
+        if (topic === "charging/updates") {
+            const payload = JSON.parse(message.toString());
+            console.log("Received update:", payload);
+            if (payload.status)
+            {
+                setStatus(payload.status);
+            }
+        }
+
+    });
+
     const startCharging = () => {
+
+        const topic = 'charging/updates';
+        const payload = JSON.stringify({ status: "Charging", timestamp: new Date().toISOString() });
+        client.publish(topic, payload);
         setCharging(true);
-        setStatus("Charging");
         setEnergyConsumed(0);
-
-        // Simulating energy consumption increase
-        const interval = setInterval(() => {
-            setEnergyConsumed((prev) => prev + 0.5);
-        }, 1000);
-
-        setTimeout(() => clearInterval(interval), 20000); // Stops simulation after 20s
     };
 
     const stopCharging = () => {
         setCharging(false);
-        setStatus("Stopped");
+        const topic = 'charging/updates';
+        const payload = JSON.stringify({ status: "Stopped", timestamp: new Date().toISOString() });
+        client.publish(topic, payload);
     };
 
     return (
