@@ -1,0 +1,62 @@
+/* ChargingSession.css */
+
+/* Body styles */
+body {
+    background-color: #f0f8ff; /* Light blue background for the whole page */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+/* Container for the charging session */
+div {
+    text-align: center;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+/* Status text styles */
+p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+/* Buttons container */
+button {
+    background-color: #4CAF50; /* Default green for Start Charging */
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Hover effects for buttons */
+button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+/* Stop Charging button specific styles */
+button:nth-of-type(2) {
+    background-color: #f44336; /* Red for Stop Charging */
+}
+
+button:nth-of-type(2):hover:not(:disabled) {
+    background-color: #e53935;
+}
