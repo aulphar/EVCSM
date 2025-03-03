@@ -4,22 +4,30 @@ import './ChargingSession.css';
 
 export default function ChargingSession() {
     const [charging, setCharging] = useState<boolean>(false);
-    const [energyConsumed, setEnergyConsumed] = useState<number>(0);
+    const [energyConsumed, setEnergyConsumed] = useState<string>("0");
     const [status, setStatus] = useState<string>("Idle");
     const [client, setClient] = useState<MqttClient | null>(null);
+    const [clientId, setClientId] = useState<string>("");
+
+    //useEffect so MqttClient doesn't reset for every re-render
 
     useEffect(() => {
         const mqttClient = mqtt.connect("ws://127.0.0.1:9001", {
+            clientId: clientId,
             protocol: "ws",
             protocolVersion: 5,
-            clean: true,
+            clean: false,
+            reconnectPeriod: 1000,
         });
 
         mqttClient.on("connect", () => {
+            console.log("Connected to MQTT broker.");
             mqttClient.subscribe("charging/updates", () => {
                 console.log("Subscribed to Charging Updates");
             });
-            console.log("Connected to MQTT broker.");
+            mqttClient.subscribe("energyconsumed", () => {
+                console.log("Subscribed to Energy Consumed Updates");
+            });
         });
 
         mqttClient.on("message", (topic, message) => {
@@ -30,10 +38,16 @@ export default function ChargingSession() {
                 if (payload.status) {
                     setStatus(() => payload.status);
                 }
-            }
+            }else if (topic === "energyconsumed") {
+                const payload = JSON.parse(message.toString());
+                console.log("Received energy consumption update:", payload);
+                if (typeof payload.energyConsumed === "number") {
+                    setEnergyConsumed(payload.energyConsumed);
+                    console.log(payload.energyConsumed);
+                }}
         });
 
-        setClient(mqttClient);
+        setClient(() => mqttClient);
 
         return () => {
             console.log("Disconnecting MQTT client...");
@@ -41,38 +55,23 @@ export default function ChargingSession() {
         };
     }, []);
 
-    useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
-
-        if (charging) {
-            interval = setInterval(() => {
-                setEnergyConsumed((prev) => prev + 0.1);
-            }, 1000);
-        } else {
-            if (interval) clearInterval(interval);
-        }
-
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [charging]);
-
     const publishMessage = (status: string) => {
         if (client) {
             const topic = "charging/updates";
-            const payload = JSON.stringify({ status, timestamp: new Date().toISOString() });
+            const payload = JSON.stringify({ status, startTime: new Date().toISOString() });
             client.publish(topic, payload);
         }
     };
 
     const startCharging = () => {
         setCharging(true);
-        setEnergyConsumed(0);
+        setEnergyConsumed(energyConsumed);
         publishMessage("Charging");
     };
 
     const stopCharging = () => {
         setCharging(false);
+        setEnergyConsumed(energyConsumed);
         publishMessage("Stopped");
     };
 
@@ -80,7 +79,7 @@ export default function ChargingSession() {
         <div>
             <h1>Electric Vehicle Charging Session</h1>
             <p>Status: {status}</p>
-            <p>Energy Consumed: {energyConsumed.toFixed(2)} kWh</p>
+            <p>Energy Consumed: {energyConsumed} kWh</p>
             <button onClick={startCharging} disabled={charging}>Start Charging</button>
             <button onClick={stopCharging} disabled={!charging}>Stop Charging</button>
         </div>
