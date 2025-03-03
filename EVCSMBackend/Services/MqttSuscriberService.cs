@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace EVCSMBackend.Services
 {
-    public class MqttSubscriberService
+    public class MqttSubscriberService : IHostedService, IDisposable
     {
         private readonly MongoDbService _mongoDbService;
         private IMqttClient? _mqttClient;
@@ -18,7 +18,7 @@ namespace EVCSMBackend.Services
             _mongoDbService = mongoDbService;
         }
 
-        public async Task StartMqttClient()
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             var factory = new MqttClientFactory();
             _mqttClient = factory.CreateMqttClient();
@@ -43,7 +43,7 @@ namespace EVCSMBackend.Services
                         await _mongoDbService.StoreChargingSession(chargingSession);
                         Console.WriteLine("Stored new charging session in MongoDB.");
 
-                        // Start simulation: update energy consumption every second
+                        
                         _simulationTimer = new Timer(async _ =>
                             {
                                 if (_currentSession != null && _currentSession.Status == "Charging")
@@ -67,25 +67,20 @@ namespace EVCSMBackend.Services
                                             .WithRetainFlag()
                                             .Build();
 
-                                        await _mqttClient.PublishAsync(message, CancellationToken.None);
+                                        await _mqttClient.PublishAsync(message, cancellationToken);
                                     }}
                             }, null, 0, 1000);
                     }
                     else if (messageData?.status == "Stopped" && _currentSession != null)
                     {
-                        // Stop the simulation timer
                         _simulationTimer?.Dispose();
                         _simulationTimer = null;
-
-                        // Finalize the current session
                         _currentSession.Status = "Stopped";
                         _currentSession.EndTime = DateTime.UtcNow;
 
-                        // Update the session in MongoDB
                         await _mongoDbService.UpdateChargingSession(_currentSession);
                         Console.WriteLine("Updated charging session in MongoDB as stopped.");
 
-                        // Publish final update
                         var finalPayload = JsonConvert.SerializeObject(new
                         {
                             status = _currentSession.Status,
@@ -102,7 +97,7 @@ namespace EVCSMBackend.Services
                                 .WithRetainFlag()
                                 .Build();
 
-                            await _mqttClient.PublishAsync(message, CancellationToken.None);
+                            await _mqttClient.PublishAsync(message, cancellationToken);
                         }
                         _currentSession = null;
                     }
@@ -119,10 +114,27 @@ namespace EVCSMBackend.Services
                 return _mqttClient.SubscribeAsync("charging/updates");
             };
 
-            await _mqttClient.ConnectAsync(options, CancellationToken.None);
+            await _mqttClient.ConnectAsync(options, cancellationToken);
         }
 
+       
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            if (_simulationTimer != null)
+            {
+                _simulationTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _simulationTimer.Dispose();
+                _simulationTimer = null;
+            }
+            if (_mqttClient != null && _mqttClient.IsConnected)
+            {
+                await _mqttClient.DisconnectAsync();
+            }
+        }
 
-
+        public void Dispose()
+        {
+            _simulationTimer?.Dispose();
+        }
     }
 }

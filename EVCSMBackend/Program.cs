@@ -8,9 +8,11 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<MqttSubscriberService>();
 
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<MqttSubscriberService>();
 
 var app = builder.Build();
 
@@ -29,5 +31,4 @@ app.MapControllers();
 
 app.Run();
 
-var mqttSubscriber = app.Services.GetRequiredService<MqttSubscriberService>();
-_ = mqttSubscriber.StartMqttClient();
+
