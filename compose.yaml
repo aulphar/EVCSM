@@ -1,0 +1,6 @@
+﻿services:
+  evcsmbackend:
+    image: evcsmbackend
+    build:
+      context: .
+      dockerfile: EVCSMBackend/Dockerfile

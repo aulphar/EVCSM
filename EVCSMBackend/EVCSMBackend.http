@@ -1,0 +1,6 @@
+@EVCSMBackend_HostAddress = http://localhost:5274
+
+GET {{EVCSMBackend_HostAddress}}
+Accept: application/json
+
+###
