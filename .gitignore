@@ -19,6 +19,8 @@ riderModule.iml
 /build
 
 # misc
+.dockerignore
+.idea
 .DS_Store
 .env.local
 .env.development.local

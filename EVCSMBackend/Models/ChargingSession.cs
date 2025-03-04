@@ -13,16 +13,14 @@ namespace EVCSMBackend.Models;
         [BsonElement("sessionId")]
         public string SessionId { get; set; } = Guid.NewGuid().ToString();
 
-        [BsonElement("startTime")]
-        public DateTime StartTime { get; set; } = DateTime.UtcNow;
+        [BsonElement("startTime")] public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
         [BsonElement("endTime")]
         public DateTime EndTime { get; set; } = DateTime.UtcNow;
 
-        [BsonElement("status")]
-        public string Status { get; set; } = "Charging";
+        [BsonElement("status")] public string Status { get; set; } = "Charging";
 
-        [BsonElement("energyConsumed")]
+        [BsonElement("energyConsumed")] 
         public double EnergyConsumed { get; set; } = 0;
     }
 

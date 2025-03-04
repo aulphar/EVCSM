@@ -8,7 +8,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cf45dd7f-dcc5-4f40-9265-9e0dcd000e54" name="Changes" comment="" />
+    <list default="true" id="cf45dd7f-dcc5-4f40-9265-9e0dcd000e54" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EVCSMBackend/EVCSMBackend.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/EVCSMBackend/EVCSMBackend.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EVCSMBackend/Models/ChargingSession.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EVCSMBackend/Models/ChargingSession.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EVCSMBackend/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EVCSMBackend/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/EVCSMBackend/Services/MqttSuscriberService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EVCSMBackend/Services/MqttSuscriberService.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
