@@ -20,7 +20,7 @@ export default function ChargingSession() {
             mqttClient.subscribe("charging/updates", () => {
                 console.log("Subscribed to Charging Updates");
             });
-            mqttClient.subscribe("energyconsumed", () => {
+            mqttClient.subscribe("session/updates", () => {
                 console.log("Subscribed to Energy Consumed Updates");
             });
         });
@@ -34,13 +34,14 @@ export default function ChargingSession() {
                     setStatus(() => payload.status);
                 }
             }
-            else if (topic === "energyconsumed") {
+             if (topic === "session/updates") {
                 const payload = JSON.parse(message.toString());
                 console.log("Received energy consumption update:", payload);
                 if (typeof payload.energyConsumed === "number") {
                     setEnergyConsumed(payload.energyConsumed);
-                    console.log(payload.energyConsumed);
-                }}
+                    console.log(payload);
+                }
+             }
         });
 
         setClient(() => mqttClient);
