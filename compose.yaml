@@ -3,4 +3,15 @@
     image: evcsmbackend
     build:
       context: .
-      dockerfile: EVCSMBackend/Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - 5274:5274
+      - 7173:7173
+    depends_on:
+      - mongodb
+      - mqtt
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MongoDB__ConnectionString=mongodb://127.0.0.1:55001
+      - MQTT__BrokerUrl=ws://127.0.0.1:9001
+

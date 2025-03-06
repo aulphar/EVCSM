@@ -13,6 +13,12 @@ export default function ChargingSession() {
             protocol: "ws",
             protocolVersion: 5,
             clean: true,
+            will: {
+                topic: "charging/updates",
+                payload: JSON.stringify({status: "Stopped", reason: "Unexpected Disconnect", endTime: Date.now()}),
+                qos: 1,
+                retain: false
+            }
         });
 
         mqttClient.on("connect", () => {
@@ -52,25 +58,28 @@ export default function ChargingSession() {
         };
     }, []);
 
-    const publishMessage = (status: string) => {
+    const publishMessage = (payload: object) => {
         if (client) {
-            const topic = "charging/updates";
-            const payload = JSON.stringify({ status, startTime: new Date().toISOString() });
-            client.publish(topic, payload);
+            client.publish("charging/updates", JSON.stringify(payload));
         }
     };
 
     const startCharging = () => {
         setCharging(true);
-        setEnergyConsumed(energyConsumed);
-        publishMessage("Charging");
+        publishMessage({
+            status: "Charging",
+            startTime: new Date().toISOString(),
+        });
     };
 
     const stopCharging = () => {
         setCharging(false);
-        setEnergyConsumed(energyConsumed);
-        publishMessage("Stopped");
+        publishMessage({
+            status: "Stopped",
+            endTime: new Date().toISOString(),
+        });
     };
+
 
     return (
         <div>

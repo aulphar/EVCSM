@@ -9,7 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["EVCSMBackend/EVCSMBackend.csproj", "EVCSMBackend/"]
 RUN dotnet restore "EVCSMBackend/EVCSMBackend.csproj"
-COPY . .
+COPY EVCSMBackend .
 WORKDIR "/src/EVCSMBackend"
 RUN dotnet build "EVCSMBackend.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
