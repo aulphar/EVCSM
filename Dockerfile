@@ -1,14 +1,18 @@
 ﻿FROM node:18 AS frontend-build
-WORKDIR /app
+WORKDIR /src
+COPY FRONTEND/package*.json ./Frontend/
+WORKDIR /src/FRONTEND
+RUN npm install
+COPY FRONTEND/ .
+RUN npm run build
 
 
 
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 5274
-EXPOSE 7173
+EXPOSE 3000
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -24,6 +28,8 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "EVCSMBackend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+RUN apt-get update && apt-get install -y nodejs npm
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=frontend-build /src/FRONTEND/build .
 ENTRYPOINT ["dotnet", "EVCSMBackend.dll"]

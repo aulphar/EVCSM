@@ -15,3 +15,5 @@
       - MongoDB__ConnectionString=mongodb://127.0.0.1:55001
       - MQTT__BrokerUrl=ws://127.0.0.1:9001
 
+volumes:
+    mongo-data:
