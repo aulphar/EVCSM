@@ -1,10 +1,21 @@
 using EVCSMBackend.Services;
+using MQTTnet;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
+
+var options = new MqttClientOptionsBuilder()
+    .WithWebSocketServer(o => o.WithUri("ws://127.0.0.1:9001"))
+    .WithCleanSession()
+    .Build();
+
+IMqttClient mqttclient = new MqttClientFactory().CreateMqttClient();
+
+mqttclient.ConnectAsync(options);
+
+builder.Services.AddSingleton<IMqttClient>(mqttclient);
+
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<MqttSubscriberService>();
 

@@ -15,8 +15,7 @@ namespace EVCSMBackend.Models;
 
         [BsonElement("startTime")] public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
-        [BsonElement("endTime")]
-        public DateTime EndTime { get; set; } = DateTime.UtcNow;
+        [BsonElement("endTime")] public DateTime? EndTime { get; set; } = null;
 
         [BsonElement("status")] public string Status { get; set; } = "Charging";
 

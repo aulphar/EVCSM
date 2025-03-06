@@ -13,16 +13,14 @@ namespace EVCSMBackend.Services
         private Timer? _simulationTimer;
         private ChargingSession? _currentSession;
 
-        public MqttSubscriberService(MongoDbService mongoDbService)
+        public MqttSubscriberService(MongoDbService mongoDbService, IMqttClient mqttClient)
         {
             _mongoDbService = mongoDbService;
+            _mqttClient = mqttClient;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var client = new MqttClientFactory()
-                .CreateMqttClient();
-            _mqttClient = client;
             _mqttClient.ConnectedAsync += e =>
             {
                 Console.WriteLine("Connected to MQTT broker.");
@@ -58,9 +56,10 @@ namespace EVCSMBackend.Services
                             if (_currentSession != null && _currentSession.Status == "Charging")
                             {
                                 _currentSession.EnergyConsumed += 0.5; 
+                                await _mongoDbService.UpdateChargingSession(_currentSession);
                                 Console.WriteLine($"Simulated energy: {_currentSession.EnergyConsumed} kWh");
 
-                                var updatePayload = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                                var updatePayload = JsonConvert.SerializeObject(new
                                 {
                                     status = _currentSession.Status,
                                     energyConsumed = _currentSession.EnergyConsumed,
@@ -108,11 +107,6 @@ namespace EVCSMBackend.Services
                 }
 
             };
-            var options = new MqttClientOptionsBuilder()
-                .WithWebSocketServer(o => o.WithUri("ws://127.0.0.1:9001/mqtt"))
-                .WithCleanSession()
-                .Build();
-            await _mqttClient.ConnectAsync(options, cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
