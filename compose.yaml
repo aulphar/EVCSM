@@ -1,19 +1,33 @@
 ﻿services:
-  evcsmbackend:
-    image: evcsmbackend
-    build:
-      context: .
-      dockerfile: Dockerfile
+  EVCSM:
+    build: .
     ports:
-      - 5274:5274
-      - 7173:7173
-    depends_on:
-      - mongodb
-      - mqtt
+      - "5274:5274"      # Backend API exposed on port 5274
+      - "3000:3000"  # Frontend served on port 3000
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - MongoDB__ConnectionString=mongodb://127.0.0.1:55001
-      - MQTT__BrokerUrl=ws://127.0.0.1:9001
+      - MongoConnectionString=mongodb://mongo:27017
+      - MqttBrokerAddress=mosquitto
+    depends_on:
+      - mongo
+      - mosquitto
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001" #for mqttwebsockets
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
 
 volumes:
-    mongo-data:
+  mongo-data:
