@@ -1,16 +1,13 @@
 services:
   evcsmbackend:
-    build: .
+    image: evcsmbackend-evcsmbackend:latest
     ports:
       - "5274:5274"      # Backend API exposed on port 5274
-      - "3000:3000"  # Frontend served on port 3000
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - MongoConnectionString=mongodb://mongo:27017
-      - MqttBrokerAddress=mosquitto
     depends_on:
-      - mongo
       - mosquitto
+      - mongo
 
   mongo:
     image: mongo:latest
