@@ -10,7 +10,7 @@ namespace EVCSMBackend.Services;
 
         public MongoDbService()
         {
-            var client = new MongoClient("mongodb://127.0.0.1:55001");
+            var client = new MongoClient("mongodb://127.0.0.1:55000");
             var database = client.GetDatabase("EVChargingDB");
             _chargingSessions = database.GetCollection<ChargingSession>("ChargingSessions");
         }

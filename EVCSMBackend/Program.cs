@@ -5,14 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-var options = new MqttClientOptionsBuilder()
-    .WithWebSocketServer(o => o.WithUri("ws://127.0.0.1:9001"))
-    .WithCleanSession()
-    .Build();
 
-IMqttClient mqttclient = new MqttClientFactory().CreateMqttClient();
 
-mqttclient.ConnectAsync(options);
+var mqttclient = new MqttClientFactory().CreateMqttClient();
+
+
 
 builder.Services.AddSingleton<IMqttClient>(mqttclient);
 

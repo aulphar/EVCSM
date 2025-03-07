@@ -1,5 +1,5 @@
 services:
-  evcsm:
+  evcsmbackend:
     build: .
     ports:
       - "5274:5274"      # Backend API exposed on port 5274
