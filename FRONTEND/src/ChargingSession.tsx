@@ -9,7 +9,7 @@ export default function ChargingSession() {
     const [client, setClient] = useState<MqttClient | null>(null);
 
     useEffect(() => {
-        const mqttClient = mqtt.connect("ws://127.0.0.1:9001", {
+        const mqttClient = mqtt.connect('ws://ec2-51-20-48-234.eu-north-1.compute.amazonaws.com:9001', {
             protocol: "ws",
             protocolVersion: 5,
             clean: true,
