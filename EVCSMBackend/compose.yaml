@@ -1,6 +1,8 @@
 services:
   evcsmbackend:
-    image: evcsmbackend-evcsmbackend:latest
+    build:
+      context: .              
+      dockerfile: Dockerfile #    image: evcsmbackend-evcsmbackend:latest
     ports:
       - "5274:5274" 
       - "8080:80"

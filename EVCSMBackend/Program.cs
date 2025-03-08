@@ -31,11 +31,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseDefaultFiles(); 
+app.UseStaticFiles(); 
+
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseStaticFiles();
 
 
 app.Run();

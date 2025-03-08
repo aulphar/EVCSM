@@ -108,7 +108,7 @@ namespace EVCSMBackend.Services
 
             };
             var options = new MqttClientOptionsBuilder()
-                .WithWebSocketServer(o => o.WithUri("ws://localhost:9001"))
+                .WithWebSocketServer(o => o.WithUri("ws://mosquitto:9001"))
                 .WithCleanSession()
                 .Build();
             await _mqttClient.ConnectAsync(options);
